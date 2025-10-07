@@ -33,6 +33,18 @@ type User struct {
 	recievesNotifications                      (map[string]bool)
 }
 
+func root(writer http.ResponseWriter, request *http.Request) { // We pass the pointer of the HTTP request to avoid copying over a potentially large request that could slow down the server
+
+	// HTTP requests and respones are transmitted as raw bytes, therefore all requests/respones need to be converted to bytes
+	// type1(variable) returns a copy of variable converted to type type1
+	writer.Write([]byte("'/'에 오신 것을 환영합니다."))
+
+}
+
 func main() {
+
+	http.HandleFunc("/", root)
+
 	http.ListenAndServe(":3000", nil)
+
 }
