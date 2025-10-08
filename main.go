@@ -50,7 +50,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(`Error loading .env file: %s`, err)
 	}
 
 	db_host := os.Getenv("DB_HOST")
