@@ -58,6 +58,9 @@ func main() {
 	db_user := os.Getenv("DB_USER")
 	db_password := os.Getenv("DB_PASSWORD")
 	db_name := os.Getenv("DB_NAME")
+	db_URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", db_user, db_password, db_host, db_port, db_name)
+
+	// pool, err := pgxpool
 
 	fmt.Println(db_host, db_port, db_user, db_password, db_name)
 
