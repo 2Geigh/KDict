@@ -1,9 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"hash"
+	"log"
 	"net/http"
+	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type Meetup struct {
@@ -42,6 +47,19 @@ func root(writer http.ResponseWriter, request *http.Request) { // We pass the po
 }
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db_host := os.Getenv("DB_HOST")
+	db_port := os.Getenv("DB_PORT")
+	db_user := os.Getenv("DB_USER")
+	db_password := os.Getenv("DB_PASSWORD")
+	db_name := os.Getenv("DB_NAME")
+
+	fmt.Println(db_host, db_port, db_user, db_password, db_name)
 
 	http.HandleFunc("/", root)
 
