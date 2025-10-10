@@ -11,31 +11,39 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// A repository (pattern) is a class that encapsulates the logic needed to access data sources
+// i.e. it abstracts database operations
+// this allows for greater code readability and easier maintenance by reducing duplicate code between controllers
+type Repository struct {
+	DB *gorm.DB // a pointer to GORM's database connection type
+	// A database connection is a large object, so just pointing to it instead saves memory
+}
+
 type Meetup struct {
-	id                int
-	time              time.Time
-	place             string
-	friends_attending []Friend
+	id                int       `json:"id"`
+	time              time.Time `json:"time"`
+	place             string    `json:"place"`
+	friends_attending []Friend  `json:"friends_attending"`
 }
 
 type Friend struct {
-	id                          int
-	name                        string
-	birthday                    time.Time
-	days_since_last_interaction int
-	days_since_last_meetup      int
-	phone_number                string // To be encrypted
-	meetup_plans                []Meetup
+	id                          int       `json:"id"`
+	name                        string    `json:"name"`
+	birthday                    time.Time `json:"birthday"`
+	days_since_last_interaction int       `json:"days_since_last_interaction"`
+	days_since_last_meetup      int       `json:"days_since_last_meetup"`
+	phone_number                string    `json:"phone_number"` // To be encrypted
+	meetup_plans                []Meetup  `json:"meetup_plans"`
 }
 
 type User struct {
-	id                                         int
-	username                                   string
-	password                                   hash.Hash64 // To be encrypted
-	days_since_you_last_interacted_with_anyone int
-	days_since_you_last_hung_out_with_anyone   int
-	meetup_plans                               []Meetup
-	recievesNotifications                      (map[string]bool)
+	id                          int               `json:"id"`
+	username                    string            `json:"username"`
+	password                    hash.Hash64       `json:"password"` // To be encrypted
+	days_since_last_interaction int               `json:"days_since_last_interaction`
+	days_since_last_meetup      int               `json:"days_since_last_meetup"`
+	meetup_plans                []Meetup          `json:"meetup_plans"`
+	recievesNotifications       (map[string]bool) `json:"recievesNotifications"`
 }
 
 func root(writer http.ResponseWriter, request *http.Request) { // We pass the pointer of the HTTP request to avoid copying over a potentially large request that could slow down the server
