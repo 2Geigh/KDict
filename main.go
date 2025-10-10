@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"hash"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
+	"net/http"
+
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	// "github.com/gin-gonic/gin"
 )
 
 // A repository (pattern) is a class that encapsulates the logic needed to access data sources
@@ -55,19 +58,30 @@ func root(writer http.ResponseWriter, request *http.Request) { // We pass the po
 
 }
 
-func main() {
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(`Error loading .env file: %s`, err)
-	}
-
+func init() {
+	// Get database env variables
+	godotenv.Load()
 	db_host := os.Getenv("DB_HOST")
 	db_port := os.Getenv("DB_PORT")
 	db_user := os.Getenv("DB_USER")
 	db_password := os.Getenv("DB_PASSWORD")
 	db_name := os.Getenv("DB_NAME")
-	db_URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", db_user, db_password, db_host, db_port, db_name)
+	// db_URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", db_user, db_password, db_host, db_port, db_name)
+
+	// Connect to database
+	dsn := fmt.Sprintf(`host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai`, db_host, db_user, db_password, db_name, db_port)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func main() {
+
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal(`Error loading .env file: %s`, err)
+	// }
 
 	// pool, err := pgxpool
 
