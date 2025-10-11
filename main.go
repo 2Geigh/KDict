@@ -1,25 +1,24 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"hash"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
-	"net/http"
-
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	// "github.com/gin-gonic/gin"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // A repository (pattern) is a class that encapsulates the logic needed to access data sources
 // i.e. it abstracts database operations
 // this allows for greater code readability and easier maintenance by reducing duplicate code between controllers
 type Repository struct {
-	DB *gorm.DB // a pointer to GORM's database connection type
+	DB *sql.DB // a pointer to database/sql's database connection type
 	// A database connection is a large object, so just pointing to it instead saves memory
 }
 
@@ -58,37 +57,40 @@ func root(writer http.ResponseWriter, request *http.Request) { // We pass the po
 
 }
 
-func init() {
-	// Get database env variables
-	godotenv.Load()
+func getDatabaseURL() string {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	db_host := os.Getenv("DB_HOST")
 	db_port := os.Getenv("DB_PORT")
 	db_user := os.Getenv("DB_USER")
 	db_password := os.Getenv("DB_PASSWORD")
 	db_name := os.Getenv("DB_NAME")
-	// db_URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", db_user, db_password, db_host, db_port, db_name)
 
-	// Connect to database
-	dsn := fmt.Sprintf(`host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai`, db_host, db_user, db_password, db_name, db_port)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
+	db_URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", db_user, db_password, db_host, db_port, db_name)
+
+	return db_URL
+
 }
 
 func main() {
 
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal(`Error loading .env file: %s`, err)
-	// }
+	db, err := sql.Open("pgx", getDatabaseURL())
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// pool, err := pgxpool
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	fmt.Println(db_host, db_port, db_user, db_password, db_name)
+	// defer db.Close()
 
 	http.HandleFunc("/", root)
 
-	http.ListenAndServe(":3000", nil)
-
+	log.Fatal(http.ListenAndServe(":3000", nil))
 }
