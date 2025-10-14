@@ -1,96 +1,115 @@
 package main
 
 import (
-	"database/sql"
+	"encoding/xml"
 	"fmt"
-	"hash"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
-	"time"
+	"os/exec"
+
+	// "html/template"
 
 	"github.com/joho/godotenv"
-
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-// A repository (pattern) is a class that encapsulates the logic needed to access data sources
-// i.e. it abstracts database operations
-// this allows for greater code readability and easier maintenance by reducing duplicate code between controllers
-type Repository struct {
-	DB *sql.DB // a pointer to database/sql's database connection type
-	// A database connection is a large object, so just pointing to it instead saves memory
+const (
+	API_URL = "https://krdict.korean.go.kr/api/search?key="
+)
+
+var (
+	API_BASE_URL string
+)
+
+type dictSearch struct {
+	Title   string     `xml:"title"`
+	Total   int        `xml:"total"`
+	Results []dictItem `xml:"item"`
 }
 
-type Meetup struct {
-	id                int       `json:"id"`
-	time              time.Time `json:"time"`
-	place             string    `json:"place"`
-	friends_attending []Friend  `json:"friends_attending"`
+type dictItem struct {
+	Target_code      int              `xml:"target_code"`
+	Word             string           `xml:"word"`
+	Sup_no           int              `xml:"sup_no"`
+	Etymology        string           `xml:"origin"`
+	Pronunciation    string           `xml:"pronunciation"`
+	Word_grade_level string           `xml:"word_grade"`
+	Word_type        string           `xml:"pos"`
+	Entry_link       string           `xml:"link"`
+	Sense            dict_entry_sense `xml:"sense"`
 }
 
-type Friend struct {
-	id                          int       `json:"id"`
-	name                        string    `json:"name"`
-	birthday                    time.Time `json:"birthday"`
-	days_since_last_interaction int       `json:"days_since_last_interaction"`
-	days_since_last_meetup      int       `json:"days_since_last_meetup"`
-	phone_number                string    `json:"phone_number"` // To be encrypted
-	meetup_plans                []Meetup  `json:"meetup_plans"`
+type dict_entry_sense struct {
+	Order      int    `xml:"sense_order"`
+	Definition string `xml:"definition"`
 }
 
-type User struct {
-	id                          int               `json:"id"`
-	username                    string            `json:"username"`
-	password                    hash.Hash64       `json:"password"` // To be encrypted
-	days_since_last_interaction int               `json:"days_since_last_interaction`
-	days_since_last_meetup      int               `json:"days_since_last_meetup"`
-	meetup_plans                []Meetup          `json:"meetup_plans"`
-	recievesNotifications       (map[string]bool) `json:"recievesNotifications"`
-}
-
-func root(writer http.ResponseWriter, request *http.Request) { // We pass the pointer of the HTTP request to avoid copying over a potentially large request that could slow down the server
-
-	// HTTP requests and respones are transmitted as raw bytes, therefore all requests/respones need to be converted to bytes
-	// type1(variable) returns a copy of variable converted to type type1
-	writer.Write([]byte("'/'에 오신 것을 환영합니다."))
-
-}
-
-func getDatabaseURL() string {
-
-	err := godotenv.Load()
+func search_word(word string) (*exec.Cmd, error) {
+	curl, err := exec.LookPath("curl")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db_host := os.Getenv("DB_HOST")
-	db_port := os.Getenv("DB_PORT")
-	db_user := os.Getenv("DB_USER")
-	db_password := os.Getenv("DB_PASSWORD")
-	db_name := os.Getenv("DB_NAME")
+	url_query := API_BASE_URL + "&q=" + url.QueryEscape(word)
 
-	db_URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", db_user, db_password, db_host, db_port, db_name)
+	// Mozilla/5.0 is set as the header to mimic web browsers,
+	// as the Korean government blocks generic headers to block scrapers
+	cmd := exec.Command(curl, "-s", "-A", "Mozilla/5.0", url_query)
+	return cmd, err
+}
 
-	return db_URL
+func parseXML(data any) {
 
 }
 
 func main() {
 
-	db, err := sql.Open("pgx", getDatabaseURL())
+	godotenv.Load()
+	API_KEY := os.Getenv("API_KEY")
+	API_BASE_URL = API_URL + API_KEY
+
+	curl, err := exec.LookPath("curl")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = db.Ping()
+	cmd := exec.Command(curl, API_BASE_URL)
+
+	fmt.Println(API_BASE_URL)
+	fmt.Println()
+	fmt.Println(cmd)
+
+	fmt.Println()
+	fmt.Println()
+	fmt.Println()
+
+	search, err := search_word("한자")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// defer db.Close()
+	out, err := search.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// fmt.Println(string(out))
 
-	http.HandleFunc("/", root)
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		var data dictSearch
 
+		err := xml.Unmarshal(out, &data)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = w.Write([]byte(fmt.Sprint(data)))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(fmt.Sprint(data))
+	})
 	log.Fatal(http.ListenAndServe(":3000", nil))
+
 }
