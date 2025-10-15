@@ -25,23 +25,23 @@ type dictSearch struct {
 }
 
 type dictItem struct {
-	Target_code      int              `xml:"target_code"`
-	Word             string           `xml:"word"`
-	Sup_no           int              `xml:"sup_no"`
-	Etymology        string           `xml:"origin"`
-	Pronunciation    string           `xml:"pronunciation"`
-	Word_grade_level string           `xml:"word_grade"`
-	Word_type        string           `xml:"pos"`
-	Entry_link       string           `xml:"link"`
-	Sense            dict_entry_sense `xml:"sense"`
+	Target_code      int            `xml:"target_code"`
+	Word             string         `xml:"word"`
+	Sup_no           int            `xml:"sup_no"`
+	Etymology        string         `xml:"origin"`
+	Pronunciation    string         `xml:"pronunciation"`
+	Word_grade_level string         `xml:"word_grade"`
+	Word_type        string         `xml:"pos"`
+	Entry_link       string         `xml:"link"`
+	Sense            dictEntrySense `xml:"sense"`
 }
 
-type dict_entry_sense struct {
+type dictEntrySense struct {
 	Order      int    `xml:"sense_order"`
 	Definition string `xml:"definition"`
 }
 
-func search_word(word string, urlWithApiKey string) (*exec.Cmd, error) {
+func searchWord(word string, urlWithApiKey string) (*exec.Cmd, error) {
 	curl, err := exec.LookPath("curl")
 	if err != nil {
 		log.Fatal(err)
@@ -80,7 +80,7 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
-	search, err := search_word("한자", apiUrlWithKey)
+	search, err := searchWord("한자", apiUrlWithKey)
 	if err != nil {
 		log.Fatal(err)
 	}
