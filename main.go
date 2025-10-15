@@ -15,11 +15,7 @@ import (
 )
 
 const (
-	API_URL = "https://krdict.korean.go.kr/api/search?key="
-)
-
-var (
-	API_BASE_URL string
+	apiUrlWithoutKey = "https://krdict.korean.go.kr/api/search?key="
 )
 
 type dictSearch struct {
@@ -45,13 +41,13 @@ type dict_entry_sense struct {
 	Definition string `xml:"definition"`
 }
 
-func search_word(word string) (*exec.Cmd, error) {
+func search_word(word string, urlWithApiKey string) (*exec.Cmd, error) {
 	curl, err := exec.LookPath("curl")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	url_query := API_BASE_URL + "&q=" + url.QueryEscape(word)
+	url_query := urlWithApiKey + "&q=" + url.QueryEscape(word)
 
 	// Mozilla/5.0 is set as the header to mimic web browsers,
 	// as the Korean government blocks generic headers to block scrapers
@@ -66,17 +62,17 @@ func parseXML(data any) {
 func main() {
 
 	godotenv.Load()
-	API_KEY := os.Getenv("API_KEY")
-	API_BASE_URL = API_URL + API_KEY
+	apiKey := os.Getenv("API_KEY")
+	apiUrlWithKey := apiUrlWithoutKey + apiKey
 
 	curl, err := exec.LookPath("curl")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cmd := exec.Command(curl, API_BASE_URL)
+	cmd := exec.Command(curl, apiUrlWithKey)
 
-	fmt.Println(API_BASE_URL)
+	fmt.Println(apiUrlWithKey)
 	fmt.Println()
 	fmt.Println(cmd)
 
@@ -84,7 +80,7 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
-	search, err := search_word("한자")
+	search, err := search_word("한자", apiUrlWithKey)
 	if err != nil {
 		log.Fatal(err)
 	}
