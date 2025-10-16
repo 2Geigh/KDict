@@ -92,11 +92,12 @@ func main() {
 	// fmt.Println(string(out))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		var data dictSearch
+		var xmlData dictSearch
 
-		err := xml.Unmarshal(out, &data)
+		// Unmarshal XML data
+		err := xml.Unmarshal(out, &xmlData)
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, fmt.Sprintf("Failed to parse XML: %v", err), http.StatusBadRequest)
 		}
 
 		// Set proper content type and status
@@ -105,10 +106,10 @@ func main() {
 
 		_, err = w.Write([]byte(fmt.Sprint(xmlData)))
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, fmt.Sprintf("Failed to write response: %v", err), http.StatusInternalServerError)
 		}
 
-		fmt.Println(fmt.Sprint(data))
+		fmt.Println(fmt.Sprint(xmlData))
 	})
 	log.Fatal(http.ListenAndServe(":3000", nil))
 
