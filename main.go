@@ -99,7 +99,11 @@ func main() {
 			log.Fatal(err)
 		}
 
-		_, err = w.Write([]byte(fmt.Sprint(data)))
+		// Set proper content type and status
+		w.Header().Set("Content-Type", "text/xml")
+		w.WriteHeader(http.StatusOK)
+
+		_, err = w.Write([]byte(fmt.Sprint(xmlData)))
 		if err != nil {
 			log.Fatal(err)
 		}
