@@ -1,15 +1,13 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
-
-	// "html/template"
 
 	"github.com/joho/godotenv"
 )
@@ -41,14 +39,14 @@ type dictEntrySense struct {
 	Definition string `xml:"definition"`
 }
 
-func fetchDictionaryData(word string, urlWithApiKey string) ([]byte, error) {
+func fetchDictionaryData(word string, urlWithApiKey string) (dictSearch, error) {
 
 	urlWithQuery := urlWithApiKey + "&q=" + url.QueryEscape(word)
 
 	// Create HTTP client request
 	req, err := http.NewRequest("GET", urlWithQuery, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create request: %v", err)
+		return dictSearch{}, fmt.Errorf("Failed to create request: %v", err)
 	}
 
 	// Mozilla/5.0 is set as the header to mimic web browsers,
@@ -58,82 +56,66 @@ func fetchDictionaryData(word string, urlWithApiKey string) ([]byte, error) {
 	// Make the HTTP request
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to execute request: %v", err)
+		return dictSearch{}, fmt.Errorf("Failed to execute request: %v", err)
 	}
 
 	// Check status code
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("HTTP status code: %v", resp.StatusCode)
+		return dictSearch{}, fmt.Errorf("HTTP status code: %v", resp.StatusCode)
 	}
 
 	// Read response body
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Could not read response body: %v", err)
+		return dictSearch{}, fmt.Errorf("Could not read response body: %v", err)
 	}
 
-	return body, nil
+	// Parse the response body's XML
+	var xml_data dictSearch
+	err = xml.Unmarshal(body, &xml_data)
+	if err != nil {
+		return dictSearch{}, fmt.Errorf("Could not parse XML: %v", err)
+	}
 
-}
-
-func parseXML(data any) {
-
+	return xml_data, nil
 }
 
 func main() {
 
+	// Create API query
 	godotenv.Load()
 	apiKey := os.Getenv("API_KEY")
 	apiUrlWithKey := apiUrlWithoutKey + apiKey
-
-	curl, err := exec.LookPath("curl")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cmd := exec.Command(curl, apiUrlWithKey)
-
-	fmt.Println(apiUrlWithKey)
-	fmt.Println()
-	fmt.Println(cmd)
-
-	fmt.Println()
-	fmt.Println()
-	fmt.Println()
 
 	search, err := fetchDictionaryData("한자", apiUrlWithKey)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(search)
-
-	// out, err := search.Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(string(out))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		xmlData := search
-
-		// Unmarshal XML data
-		// err := xml.Unmarshal(out, &xmlData)
-		// if err != nil {
-		// 	http.Error(w, fmt.Sprintf("Failed to parse XML: %v", err), http.StatusBadRequest)
-		// }
 
 		// Set proper content type and status
 		w.Header().Set("Content-Type", "text/xml")
 		w.WriteHeader(http.StatusOK)
 
-		// _, err = w.Write([]byte(fmt.Sprint(xmlData)))
-		// if err != nil {
-		// 	http.Error(w, fmt.Sprintf("Failed to write response: %v", err), http.StatusInternalServerError)
-		// }
+		_, err = w.Write([]byte(search.Results[0].Sense.Definition))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to write response: %v", err), http.StatusInternalServerError)
+		}
 
-		fmt.Println(fmt.Sprint(xmlData))
+		fmt.Println(fmt.Sprint(search))
 	})
 	log.Fatal(http.ListenAndServe(":3000", nil))
+
+	http.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request) {
+
+		requestURL := *req.URL
+		requestURI := requestURL.RequestURI()
+
+		w.Write([]byte(requestURI))
+		fmt.Println(requestURL)
+		fmt.Println(requestURI)
+	})
 
 }
