@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -15,6 +16,10 @@ import (
 const (
 	apiUrlWithoutKey = "https://krdict.korean.go.kr/api/search?key="
 )
+
+type userSearch struct {
+	query string
+}
 
 type dictSearch struct {
 	Title   string     `xml:"title"`
@@ -94,28 +99,55 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-
-		// Set proper content type and status
-		w.Header().Set("Content-Type", "text/xml")
-		w.WriteHeader(http.StatusOK)
-
-		_, err = w.Write([]byte(search.Results[0].Sense.Definition))
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to write response: %v", err), http.StatusInternalServerError)
-		}
-
-		fmt.Println(fmt.Sprint(search))
+		http.ServeFile(w, req, "index.html")
 	})
-	log.Fatal(http.ListenAndServe(":3000", nil))
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request) {
 
-		requestURL := *req.URL
-		requestURI := requestURL.RequestURI()
+		tmpl := template.Must(template.ParseFiles("./templates/results.html"))
 
-		w.Write([]byte(requestURI))
-		fmt.Println(requestURL)
-		fmt.Println(requestURI)
+		err := tmpl.Execute(w, search)
+		if err != nil {
+			http.Error(w, "Could not execute templating of results.html", 500)
+		}
+
 	})
 
+	log.Fatal(http.ListenAndServe(":3000", nil))
 }
+
+// For item in dictSearch.Results
+// {
+// 	한국어 기초사전 개발 지원(Open API) - 사전 검색
+// 	5
+// 	[
+// 		{
+// 			72461
+// 			한자
+// 			0
+// 			漢字
+// 			한ː짜
+// 			중급
+// 			명사
+// 			https://krdict.korean.go.kr/kor/dicSearch/SearchView?ParaWordNo=72461
+// 			{
+// 				1
+// 				중국에서 만들어 오늘날에도 쓰고 있는 중국 고유의 문자.
+// 			}
+// 		}
+
+// 		{
+// 			85621
+// 			한자리
+// 			0
+// 			한자리
+// 			고급
+// 			명사
+// 			https://krdict.korean.go.kr/kor/dicSearch/SearchView?ParaWordNo=85621
+// 			{
+// 				2
+// 				중요하거나 높은 직위. 또는 어느 한 직위.
+// 			}
+// 		}
+
+// 		{93420 한자어 0 漢字語 한ː짜어 고급 명사 https://krdict.korean.go.kr/kor/dicSearch/SearchView?ParaWordNo=93420 {1 한자에 기초하여 만들어진 말.}} {85622 한자리하다 0  한자리하다  동사 https://krdict.korean.go.kr/kor/dicSearch/SearchView?ParaWordNo=85622 {1 중요하거나 높은 직위에 오르다.}} {88977 한자음 0 漢字音 한ː짜음  명사 https://krdict.korean.go.kr/kor/dicSearch/SearchView?ParaWordNo=88977 {1 한자의 발음이나 소리.}}]}
