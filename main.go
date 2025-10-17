@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/xml"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -41,18 +41,40 @@ type dictEntrySense struct {
 	Definition string `xml:"definition"`
 }
 
-func searchWord(word string, urlWithApiKey string) (*exec.Cmd, error) {
-	curl, err := exec.LookPath("curl")
-	if err != nil {
-		log.Fatal(err)
-	}
+func fetchDictionaryData(word string, urlWithApiKey string) ([]byte, error) {
 
-	url_query := urlWithApiKey + "&q=" + url.QueryEscape(word)
+	urlWithQuery := urlWithApiKey + "&q=" + url.QueryEscape(word)
+
+	// Create HTTP client request
+	req, err := http.NewRequest("GET", urlWithQuery, nil)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create request: %v", err)
+	}
 
 	// Mozilla/5.0 is set as the header to mimic web browsers,
 	// as the Korean government blocks generic headers to block scrapers
-	cmd := exec.Command(curl, "-s", "-A", "Mozilla/5.0", url_query)
-	return cmd, err
+	req.Header.Set("User-Agent", "Mozilla/5.0")
+
+	// Make the HTTP request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to execute request: %v", err)
+	}
+
+	// Check status code
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP status code: %v", resp.StatusCode)
+	}
+
+	// Read response body
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Could not read response body: %v", err)
+	}
+
+	return body, nil
+
 }
 
 func parseXML(data any) {
@@ -80,34 +102,35 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
-	search, err := searchWord("한자", apiUrlWithKey)
+	search, err := fetchDictionaryData("한자", apiUrlWithKey)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(search)
 
-	out, err := search.Output()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// out, err := search.Output()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	// fmt.Println(string(out))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		var xmlData dictSearch
+		xmlData := search
 
 		// Unmarshal XML data
-		err := xml.Unmarshal(out, &xmlData)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse XML: %v", err), http.StatusBadRequest)
-		}
+		// err := xml.Unmarshal(out, &xmlData)
+		// if err != nil {
+		// 	http.Error(w, fmt.Sprintf("Failed to parse XML: %v", err), http.StatusBadRequest)
+		// }
 
 		// Set proper content type and status
 		w.Header().Set("Content-Type", "text/xml")
 		w.WriteHeader(http.StatusOK)
 
-		_, err = w.Write([]byte(fmt.Sprint(xmlData)))
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to write response: %v", err), http.StatusInternalServerError)
-		}
+		// _, err = w.Write([]byte(fmt.Sprint(xmlData)))
+		// if err != nil {
+		// 	http.Error(w, fmt.Sprintf("Failed to write response: %v", err), http.StatusInternalServerError)
+		// }
 
 		fmt.Println(fmt.Sprint(xmlData))
 	})
