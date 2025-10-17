@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KDict</title>
+</head>
+<body>
+    <div id="results">
+        {{ range .Results }}
+        <div class="result" id="{{ .Target_code }}">
+            <h3 class="entry_word">{{ .Word}}</h3>
+        </div>
+        {{ end }}
+    </div>
+</body>
+</html>
