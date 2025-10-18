@@ -72,6 +72,11 @@ form {
 }
 
 #title_subtitle_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     color: black;
     font-style: normal;
     text-decoration: none;
