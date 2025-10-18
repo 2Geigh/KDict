@@ -4,22 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KDict</title>
-    <link rel="stylesheet" href="/static/styles/results.css">
+    <link rel="stylesheet" href="/static/styles/dist/all.min.css">
 </head>
+
 <body>
-    <form action="/results" method="get" id="search">
-        <label for="searchBox">더 자세히 알고 싶은 낱말:</label>
-        <input
-            type="text"
-            id="searchBox"
-            name="search_query"
-            placeholder="더 자세히 알고 싶은 낱말"
-            class="w-[300px] border border-slate-200 rounded-lg py-3 px-5 outline-none	bg-transparent"
-        />
-        <input id="searchButton" type="submit" value="검색"/>
-    </form>
-    
-    <div id="results">
+    <main>
+        <a id="title_subtitle_container" href="/">
+            <h1 id="title">토끼 사전</h1>
+            <h2 id="subtitle">단순한 국어 사전.</h2>
+        </a>
+        
+        <form action="/results" method="get" id="search">
+            <label for="searchBox">더 자세히 알고 싶은 낱말:</label>
+            <input
+                type="text"
+                id="searchBox"
+                name="search_query"
+                placeholder="더 자세히 알고 싶은 낱말"
+                class="w-[300px] border border-slate-200 rounded-lg py-3 px-5 outline-none	bg-transparent"
+            />
+            <input id="searchButton" type="submit" value="검색"/>
+        </form>
+
+        <div id="results">
         {{ range .Results }}
         <div class="result" id="{{ .Target_code }}">
             {{ if .Etymology }}
@@ -35,5 +42,6 @@
         </div>
         {{ end }}
     </div>
+    </main>
 </body>
 </html>
