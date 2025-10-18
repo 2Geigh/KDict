@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KDict</title>
+    <link rel="stylesheet" href="/static/styles/results.css">
 </head>
 <body>
     <div id="results">
         {{ range .Results }}
         <div class="result" id="{{ .Target_code }}">
-            <h3 class="entry_word">{{ .Word}}</h3>
+            {{ if .Etymology }}
+            <h3 class="entry"><span class="word">{{ .Word }}</span><span class="hanja"><span class="hanja_bracket">&#x3014;</span>{{ .Etymology }}<span class="hanja_bracket">&#x3015;</span></span></h3>
+            {{ else }}  
+            <h3 class="entry">{{ .Word }}<!--<span class="hanja">&#x2997; 고유어 &#x2998;</span>--></h3>
+            {{ end }}
+            <p><span class="word_type">{{ .Word_type }}: </span>{{ .Sense.Definition }}</p>
         </div>
         {{ end }}
     </div>

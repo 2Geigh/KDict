@@ -54,6 +54,10 @@ form input {
     border: 1px solid gray;
 }
 
+form label {
+    display: none;
+}
+
 #searchBox {
     padding-left: 0.25em;
 }

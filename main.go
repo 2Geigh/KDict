@@ -83,6 +83,7 @@ func fetchDictionaryData(word string, urlWithApiKey string) (dictSearch, error) 
 		return dictSearch{}, fmt.Errorf("Could not parse XML: %v", err)
 	}
 
+	log.Printf("Successfully fetched dictionary data for '%s'", word)
 	return xml_data, nil
 }
 
@@ -96,11 +97,6 @@ func main() {
 	// Serve static files
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	search, err := fetchDictionaryData("한자", apiUrlWithKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Routing
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, "index.html")
@@ -108,10 +104,17 @@ func main() {
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request) {
 
+		search, err := fetchDictionaryData("집", apiUrlWithKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Parse HTML template
 		tmpl := template.Must(template.ParseFiles("./templates/results.html"))
 
-		err := tmpl.Execute(w, search)
+		err = tmpl.Execute(w, search)
 		if err != nil {
+			log.Printf("Error executing template: %v", err)
 			http.Error(w, "Could not execute templating of results.html", 500)
 		}
 
