@@ -107,6 +107,12 @@ func main() {
 		// Get ƒorm data
 		search_query := req.FormValue("search_query")
 
+		// Validate form data
+		if search_query == "" {
+			http.Redirect(w, req, "/", http.StatusSeeOther)
+			return
+		}
+
 		// Send form data to API
 		search_results, err := fetchDictionaryData(search_query, apiUrlWithKey)
 		if err != nil {
