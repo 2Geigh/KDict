@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDict</title>
+    <title>토끼 사전</title>
     <link rel="stylesheet" href="/static/styles/dist/all.min.css">
 </head>
 
@@ -38,7 +38,11 @@
             <h3 class="entry">{{ .Word }}<!--<span class="hanja">&#x2997; 고유어 &#x2998;</span>--></h3>
             {{ end }}
 
+            {{ if .Word_type }}
             <p><span class="word_type">{{ .Word_type }}:</span><span>{{ .Sense.Definition }}</span></p>
+            {{ else }}
+            <p><span class="word_type">기타: </span><span>{{ .Sense.Definition }}</span></p>
+            {{ end }}
         </div>
         {{ end }}
     </div>
