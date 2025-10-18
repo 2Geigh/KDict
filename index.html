@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/styles/index.css">
     <title>KDict</title>
 </head>
 <body>
-    <h1>KDict</h1>
-    <h2>단순한 국어 사전.</h2>
-    
-    <form action="./main.go" id="search">
-        <input
-            type="text"
-            id="searchBox"
-            name="searchBox"
-            placeholder="대한민국"
-            class="w-[300px] border border-slate-200 rounded-lg py-3 px-5 outline-none	bg-transparent"
-        />
-        <input type="submit" value="Search"/>
-    </form>
+    <main>
+        <h1 id="title">토끼 사전</h1>
+        <h2 id="subtitle">단순한 국어 사전.</h2>
+        
+        <form action="./main.go" id="search">
+            <input
+                type="text"
+                id="searchBox"
+                name="searchBox"
+                placeholder="더 자세히 알고 싶은 낱말"
+                class="w-[300px] border border-slate-200 rounded-lg py-3 px-5 outline-none	bg-transparent"
+            />
+            <input id="searchButton" type="submit" value="검색"/>
+        </form>
+    </main>
 </body>
 </html>

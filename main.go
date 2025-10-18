@@ -93,11 +93,15 @@ func main() {
 	apiKey := os.Getenv("API_KEY")
 	apiUrlWithKey := apiUrlWithoutKey + apiKey
 
+	// Serve static files
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	search, err := fetchDictionaryData("한자", apiUrlWithKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Routing
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, "index.html")
 	})
