@@ -17,8 +17,9 @@ const (
 	apiUrlWithoutKey = "https://krdict.korean.go.kr/api/search?key="
 )
 
-type userSearch struct {
-	query string
+type templateData struct {
+	SearchQuery  string
+	SearchResult dictSearch
 }
 
 type dictSearch struct {
@@ -104,17 +105,21 @@ func main() {
 
 	http.HandleFunc("/results", func(w http.ResponseWriter, req *http.Request) {
 
+		var (
+			data = templateData{}
+			err  error
+		)
 		// Get ƒorm data
-		search_query := req.FormValue("search_query")
+		data.SearchQuery = req.FormValue("search_query")
 
 		// Validate form data
-		if search_query == "" {
+		if data.SearchQuery == "" {
 			http.Redirect(w, req, "/", http.StatusSeeOther)
 			return
 		}
 
 		// Send form data to API
-		search_results, err := fetchDictionaryData(search_query, apiUrlWithKey)
+		data.SearchResult, err = fetchDictionaryData(data.SearchQuery, apiUrlWithKey)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -122,14 +127,19 @@ func main() {
 		// Parse HTML template
 		tmpl := template.Must(template.ParseFiles("./templates/results.html"))
 
-		err = tmpl.Execute(w, search_results)
+		fmt.Println()
+		fmt.Println(data)
+		fmt.Println(data.SearchResult)
+
+		err = tmpl.Execute(w, data)
 		if err != nil {
 			log.Printf("Error executing template: %v", err)
-			http.Error(w, "Could not execute templating of results.html", 500)
+			http.Error(w, fmt.Sprint(err), 500)
 		}
 
 	})
 
+	// Start server
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }
 
