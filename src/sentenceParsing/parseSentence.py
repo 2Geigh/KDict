@@ -1,27 +1,50 @@
-import timeit
+import sys
+import openkorpos_dic
 from konlpy.tag import Mecab
 from konlpy.utils import pprint
-import openkorpos_dic
 
+
+
+
+# Initialize the Mecab object with the specified dictionary
 mecab = Mecab(dicpath=openkorpos_dic.DICDIR)
 
 def filterJunkWords(mecabOutput: [tuple[str, str]]):
     toOutput = []
     for wordTuple in mecabOutput:
+        # Filter out junk words based on specified tags
         if wordTuple[1] not in ["SF", "SY", "SC"]:
             toOutput.append(wordTuple)
     return toOutput
 
 def parseSentence(query: [str]):
+    # Parse the input query with mecab
     unfilteredOutput = mecab.pos(query)
+
+    # Filter the parsed output
     filteredOutput = filterJunkWords(unfilteredOutput)
+
     # print(filteredOutput)
     return filteredOutput
 
 if __name__ == "__main__":
-    mecab_time = timeit.timeit('parseSentence("안녕하세요! 오늘은 2025년 10월 18일입니다. #KoreanText @User123 이메일: example@test.com 웹사이트: http://example.com")',
-                                setup="from __main__ import pprint, mecab, openkorpos_dic, parseSentence, filterJunkWords",
-                                number=1000)
 
-    # Print timing results
-    print(f'Mecab time: {mecab_time}')
+    numberOfArgumentsProvided = len(sys.argv)
+
+    if numberOfArgumentsProvided > 2:
+        print("Too many arguments provided.")
+        sys.exit(1)
+
+    if numberOfArgumentsProvided > 1:
+        argument = sys.argv[1]
+
+        result = parseSentence(sys.argv[1])
+        
+        for wordTuple in result:
+            word = wordTuple[0]
+            print(word)
+        sys.exit(0)
+
+    else:
+        print("No input string provided.")
+        sys.exit(1)  # Exit with error code if no input string is provided

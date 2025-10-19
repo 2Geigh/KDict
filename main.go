@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 	"html/template"
@@ -9,6 +10,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
+	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,8 +22,8 @@ const (
 )
 
 type templateData struct {
-	SearchQuery  string
-	SearchResult dictSearch
+	SearchQuery   string
+	SearchResults []dictSearch
 }
 
 type dictSearch struct {
@@ -88,6 +92,99 @@ func fetchDictionaryData(word string, urlWithApiKey string) (dictSearch, error) 
 	return xml_data, nil
 }
 
+func resultsHandler(w http.ResponseWriter, req *http.Request, apiUrl string) {
+
+	var (
+		data = templateData{}
+	)
+
+	// Get ƒorm data
+	data.SearchQuery = req.FormValue("search_query")
+
+	// Validate form data
+	if data.SearchQuery == "" {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+
+	// Parse sentence
+	words, err := parseSentence(data.SearchQuery)
+	if err != nil {
+		http.Error(w, fmt.Sprint(err), 500)
+		return
+	}
+	fmt.Println(words)
+
+	// Send each parsed word to API
+	for _, v := range words {
+		wordSearchData, err := fetchDictionaryData(v, apiUrl)
+		if err != nil {
+			http.Error(w, fmt.Sprint(err), 500)
+			return
+		}
+
+		// Append found data to the SearchResults field of the data variable
+		data.SearchResults = append(data.SearchResults, wordSearchData)
+	}
+	fmt.Println(data)
+
+	// data.SearchResults, err = fetchDictionaryData(data.SearchQuery, apiUrl)
+	// if err != nil {
+	// 	http.Error(w, fmt.Sprint(err), 500)
+	// 	return
+	// }
+
+	// Parse HTML template
+	tmpl := template.Must(template.ParseFiles("./templates/results.html"))
+
+	// Insert data into parsed HTML template
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, fmt.Sprint(err), 500)
+		return
+	}
+
+}
+
+func parseSentence(query string) ([]string, error) {
+
+	// Get current directory
+	dir, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("Could not get working directory: %v\n", err)
+	}
+	fmt.Println("Current working directory:", dir)
+
+	filename := "parseSentence.py"
+	pythonProgramPath := fmt.Sprintf("%s/src/sentenceParsing/%s", dir, filename)
+
+	// Create parseSentence.py terminal call
+	cmd := exec.Command("python", pythonProgramPath, query)
+
+	// Capture the standard output
+	var out bytes.Buffer
+	cmd.Stdout = &out
+
+	// Execute command and wait for it to complete
+	log.Printf("Calling %s...", filename)
+	start := time.Now()
+	err = cmd.Run()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to call %s: %v\n", filename, err)
+	}
+	elapsed := time.Since(start)
+	log.Printf("%s call completed in %v\n", filename, elapsed)
+
+	// Get output as string
+	output := out.String()
+
+	// Split the output into words by line
+	words := strings.Split((strings.TrimSpace(output)), "\n")
+
+	return words, err
+
+}
+
 func main() {
 
 	// Create API query
@@ -98,49 +195,19 @@ func main() {
 	// Serve static files
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	// Routing
+	// route "/"
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, "index.html")
 	})
 
+	// route "/results"
 	http.HandleFunc("/results", func(w http.ResponseWriter, req *http.Request) {
-
-		var (
-			data = templateData{}
-			err  error
-		)
-		// Get ƒorm data
-		data.SearchQuery = req.FormValue("search_query")
-
-		// Validate form data
-		if data.SearchQuery == "" {
-			http.Redirect(w, req, "/", http.StatusSeeOther)
-			return
-		}
-
-		// Send form data to API
-		data.SearchResult, err = fetchDictionaryData(data.SearchQuery, apiUrlWithKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Parse HTML template
-		tmpl := template.Must(template.ParseFiles("./templates/results.html"))
-
-		fmt.Println()
-		fmt.Println(data)
-		fmt.Println(data.SearchResult)
-
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			log.Printf("Error executing template: %v", err)
-			http.Error(w, fmt.Sprint(err), 500)
-		}
-
+		resultsHandler(w, req, apiUrlWithKey)
 	})
 
 	// Start server
 	log.Fatal(http.ListenAndServe(":3000", nil))
+
 }
 
 // For item in dictSearch.Results
