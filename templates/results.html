@@ -29,24 +29,26 @@
         </form>
 
         <div id="results">
-        {{ range .SearchResult.Results }}
-        <div class="result" id="{{ .Target_code }}">
-            {{ if .Etymology }}
-            <h3 class="entry">
-                <span class="word" tabindex="0">{{ .Word }}</span>
-                <span class="hanja"><span class="hanja_bracket">&#x3014;</span><span tabindex="0">{{ .Etymology }}</span><span class="hanja_bracket">&#x3015;</span></span>
-            </h3>
-            {{ else }}
-            <h3 class="entry"><span tabindex="0">{{ .Word }}</span><!--<span class="hanja">&#x2997; 고유어 &#x2998;</span>--></h3>
-            {{ end }}
+        {{ range .SearchResults }}
+            {{ range .Results }}
+            <div class="result" id="{{ .Target_code }}">
+                {{ if .Etymology }}
+                <h3 class="entry">
+                    <span class="word" tabindex="0">{{ .Word }}</span>
+                    <span class="hanja"><span class="hanja_bracket">&#x3014;</span><span tabindex="0">{{ .Etymology }}</span><span class="hanja_bracket">&#x3015;</span></span>
+                </h3>
+                {{ else }}
+                <h3 class="entry"><span tabindex="0">{{ .Word }}</span><!--<span class="hanja">&#x2997; 고유어 &#x2998;</span>--></h3>
+                {{ end }}
 
-            {{ if .Word_type }}
-            <p><span class="word_type">{{ .Word_type }}:</span><span tabindex="0">{{ .Sense.Definition }}</span></p>
-            {{ else }}
-            <p><span class="word_type">기타: </span><span tabindex="0">{{ .Sense.Definition }}</span></p>
+                {{ if .Word_type }}
+                <p><span class="word_type">{{ .Word_type }}:</span><span tabindex="0">{{ .Sense.Definition }}</span></p>
+                {{ else }}
+                <p><span class="word_type">기타: </span><span tabindex="0">{{ .Sense.Definition }}</span></p>
+                {{ end }}
+            </div>
             {{ end }}
-        </div>
-        {{ end }}
+        {{end}}
     </div>
     </main>
 </body>
