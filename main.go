@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 
@@ -92,7 +93,24 @@ func fetchDictionaryData(word string, urlWithApiKey string) (dictSearch, error) 
 	return xml_data, nil
 }
 
+func removeEmojis(input string) string {
+	// This regex pattern matches emojis by their Unicode ranges using the correct escape sequence.
+	emojiRegex := regexp.MustCompile(
+		`[\x{1F600}-\x{1F64F}` + // Emoticons
+			`|\x{1F300}-\x{1F5FF}` + // Miscellaneous Symbols and Pictographs
+			`|\x{1F680}-\x{1F6FF}` + // Transport and Map Symbols
+			`|\x{1F700}-\x{1F8FF}` + // Alchemical Symbols
+			`|\x{1F900}-\x{1F9FF}` + // Supplemental Symbols and Pictographs
+			`|\x{2700}-\x{27BF}` + // Dingbats
+			`|\x{1F1E6}-\x{1F1FF}]`) // Regional Indicator Symbols
+
+	return emojiRegex.ReplaceAllString(input, "")
+}
+
 func resultsHandler(w http.ResponseWriter, req *http.Request, apiUrl string) {
+
+	// For ease of readability in the terminal
+	fmt.Println()
 
 	var (
 		data = templateData{}
@@ -106,6 +124,15 @@ func resultsHandler(w http.ResponseWriter, req *http.Request, apiUrl string) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
+
+	// Query before emoji removal
+	fmt.Printf("Pre-de-emoji: %s\n", data.SearchQuery)
+
+	// Remove emojis from form data
+	data.SearchQuery = removeEmojis(data.SearchQuery)
+
+	// Query after emoji removal
+	fmt.Printf("Post-de-emoji: %s\n", data.SearchQuery)
 
 	// Skip parsing step if the query only has one word
 	if strings.Contains(data.SearchQuery, " ") {
@@ -167,15 +194,19 @@ func parseSentence(query string) ([]string, error) {
 	cmd := exec.Command("python", pythonProgramPath, query)
 
 	// Capture the standard output
-	var out bytes.Buffer
+	var (
+		out    bytes.Buffer
+		stderr bytes.Buffer // To capture standard error
+	)
 	cmd.Stdout = &out
+	cmd.Stderr = &stderr
 
 	// Execute command and wait for it to complete
 	log.Printf("Calling %s...", filename)
 	start := time.Now()
 	err = cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to call %s: %v\n", filename, err)
+		return nil, fmt.Errorf("Failed to call %s: %v, stderr: %s", filename, err, stderr.String())
 	}
 	elapsed := time.Since(start)
 	log.Printf("%s call completed in %v\n", filename, elapsed)

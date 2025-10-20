@@ -3,13 +3,10 @@ import openkorpos_dic
 from konlpy.tag import Komoran
 from konlpy.utils import pprint
 
-
-
-
-# Initialize the Mecab object with the specified dictionary
+# Initialize the Komoran object
 komoran = Komoran()
 
-def filterJunkWords(posOutput: [tuple[str, str]]):
+def filterJunkWords(posOutput: list[tuple[str, str]]):
     toOutput = []
     for wordTuple in posOutput:
         # Filter out junk words based on specified tags
@@ -17,14 +14,13 @@ def filterJunkWords(posOutput: [tuple[str, str]]):
             toOutput.append(wordTuple)
     return toOutput
 
-def parseSentence(query: [str]):
-    # Parse the input query with mecab
+def parseSentence(query: str):
+    # Parse the input query with Komoran
     unfilteredOutput = komoran.pos(query)
 
     # Filter the parsed output
     filteredOutput = filterJunkWords(unfilteredOutput)
 
-    # print(filteredOutput)
     return filteredOutput
 
 if __name__ == "__main__":
@@ -36,9 +32,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if numberOfArgumentsProvided > 1:
-        argument = sys.argv[1]
+        # Use repr to safely handle the input string
+        argument = repr(sys.argv[1])[1:-1]  # Remove the quotes added by repr
 
-        result = parseSentence(sys.argv[1])
+        result = parseSentence(argument)
         
         for wordTuple in result:
             word = wordTuple[0]
