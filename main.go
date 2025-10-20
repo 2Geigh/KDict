@@ -107,17 +107,29 @@ func resultsHandler(w http.ResponseWriter, req *http.Request, apiUrl string) {
 		return
 	}
 
-	// Parse sentence
-	words, err := parseSentence(data.SearchQuery)
-	if err != nil {
-		http.Error(w, fmt.Sprint(err), 500)
-		return
-	}
-	fmt.Println(words)
+	// Skip parsing step if the query only has one word
+	if strings.Contains(data.SearchQuery, " ") {
+		// Parse multi-word query
+		words, err := parseSentence(data.SearchQuery)
+		if err != nil {
+			http.Error(w, fmt.Sprint(err), 500)
+			return
+		}
+		fmt.Println(words)
 
-	// Send each parsed word to API
-	for _, v := range words {
-		wordSearchData, err := fetchDictionaryData(v, apiUrl)
+		// Send each parsed word to API
+		for _, v := range words {
+			wordSearchData, err := fetchDictionaryData(v, apiUrl)
+			if err != nil {
+				http.Error(w, fmt.Sprint(err), 500)
+				return
+			}
+
+			// Append found data to the SearchResults field of the data variable
+			data.SearchResults = append(data.SearchResults, wordSearchData)
+		}
+	} else {
+		wordSearchData, err := fetchDictionaryData(data.SearchQuery, apiUrl)
 		if err != nil {
 			http.Error(w, fmt.Sprint(err), 500)
 			return
@@ -126,19 +138,12 @@ func resultsHandler(w http.ResponseWriter, req *http.Request, apiUrl string) {
 		// Append found data to the SearchResults field of the data variable
 		data.SearchResults = append(data.SearchResults, wordSearchData)
 	}
-	fmt.Println(data)
-
-	// data.SearchResults, err = fetchDictionaryData(data.SearchQuery, apiUrl)
-	// if err != nil {
-	// 	http.Error(w, fmt.Sprint(err), 500)
-	// 	return
-	// }
 
 	// Parse HTML template
 	tmpl := template.Must(template.ParseFiles("./templates/results.html"))
 
 	// Insert data into parsed HTML template
-	err = tmpl.Execute(w, data)
+	err := tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, fmt.Sprint(err), 500)
 		return
