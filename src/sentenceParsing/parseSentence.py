@@ -1,17 +1,17 @@
 import sys
 import openkorpos_dic
-from konlpy.tag import Mecab
+from konlpy.tag import Komoran
 from konlpy.utils import pprint
 
 
 
 
 # Initialize the Mecab object with the specified dictionary
-mecab = Mecab(dicpath=openkorpos_dic.DICDIR)
+komoran = Komoran()
 
-def filterJunkWords(mecabOutput: [tuple[str, str]]):
+def filterJunkWords(posOutput: [tuple[str, str]]):
     toOutput = []
-    for wordTuple in mecabOutput:
+    for wordTuple in posOutput:
         # Filter out junk words based on specified tags
         if wordTuple[1] not in ["SF", "SY", "SC"]:
             toOutput.append(wordTuple)
@@ -19,7 +19,7 @@ def filterJunkWords(mecabOutput: [tuple[str, str]]):
 
 def parseSentence(query: [str]):
     # Parse the input query with mecab
-    unfilteredOutput = mecab.pos(query)
+    unfilteredOutput = komoran.pos(query)
 
     # Filter the parsed output
     filteredOutput = filterJunkWords(unfilteredOutput)
@@ -47,4 +47,4 @@ if __name__ == "__main__":
 
     else:
         print("No input string provided.")
-        sys.exit(1)  # Exit with error code if no input string is provided
+        sys.exit(-1)  # Exit with error code if no input string is provided
