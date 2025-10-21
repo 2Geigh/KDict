@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토끼 사전</title>
+    <link rel="stylesheet" href="/static/styles/dist/all.min.css">
+</head>
+
+<body>
+    <main>
+        <a id="title_subtitle_container" href="/">
+            <h1 id="title">토끼 사전</h1>
+            <h2 id="subtitle">단순한 국어 사전</h2>
+        </a>
+        
+        <form action="/results" method="get" id="search" required>
+            <label for="searchBox">더 자세히 알고 싶은 낱말:</label>
+            <input
+                type="text"
+                id="searchBox"
+                name="search_query"
+                placeholder="더 자세히 알고 싶은 낱말"
+                class="w-[300px] border border-slate-200 rounded-lg py-3 px-5 outline-none	bg-transparent"
+                minlength="1"
+                value="{{ .SearchQuery }}"
+            />
+            <input id="searchButton" type="submit" value="검색"/>
+        </form>
+
+        <div id="results">
+        {{ range .SearchResults }}
+            {{ range .Results }}
+            <div class="result" id="{{ .Target_code }}">
+                {{ if .Etymology }}
+                <h3 class="entry">
+                    <span class="word" tabindex="0">{{ .Word }}</span>
+                    <span class="hanja"><span class="hanja_bracket">&#x3014;</span><span tabindex="0">{{ .Etymology }}</span><span class="hanja_bracket">&#x3015;</span></span>
+                </h3>
+                {{ else }}
+                <h3 class="entry"><span tabindex="0">{{ .Word }}</span><!--<span class="hanja">&#x2997; 고유어 &#x2998;</span>--></h3>
+                {{ end }}
+
+                {{ if .Word_type }}
+                <p><span class="word_type">{{ .Word_type }}:</span><span tabindex="0">{{ .Sense.Definition }}</span></p>
+                {{ else }}
+                <p><span class="word_type">기타: </span><span tabindex="0">{{ .Sense.Definition }}</span></p>
+                {{ end }}
+            </div>
+            {{ end }}
+        {{end}}
+    </div>
+    </main>
+</body>
+</html>

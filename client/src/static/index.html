@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/styles/dist/index.min.css">
+    <title>토끼 사전</title>
+</head>
+<body>
+    <main>
+        <a id="title_subtitle_container" href="/">
+            <h1 id="title">토끼 사전</h1>
+            <h2 id="subtitle">단순한 국어 사전</h2>
+        </a>
+
+        <form action="/results" method="get" id="search" required>
+            <label for="searchBox">더 자세히 알고 싶은 낱말:</label>
+            <input
+                type="text"
+                id="searchBox"
+                name="search_query"
+                placeholder="더 자세히 알고 싶은 낱말"
+                class="w-[300px] border border-slate-200 rounded-lg py-3 px-5 outline-none	bg-transparent"
+                minlength="1"
+            />
+            <input id="searchButton" type="submit" value="검색"/>
+        </form>
+    </main>
+</body>
+</html>
