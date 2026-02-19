@@ -1,11 +1,15 @@
-# KDict
+# Vedana (문행 | 文行)
 
-A minimalist web client for accessing the [한국어기초사전](https://krdict.korean.go.kr/kor/) Open API.
+A system for Korean learners to store and convert Korean sentences they encounter into Anki cards.
 
-# Dependencies
+## Stack
 
-MeCab Korean sentence parsing algorithm available through:
+### Desktop
 
-```bash
-curl -s https://raw.githubusercontent.com/konlpy/konlpy/master/scripts/mecab.sh
-```
+- UI: React & Rust (Tuari)
+- Storage: SQLite
+
+### Mobile
+
+- React Native
+
