@@ -1,0 +1,18 @@
+#Loading {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	margin-top: 1em;
+	margin-bottom: 1em;
+
+	font-weight: lighter;
+
+	opacity: 50%;
+	// background-color: blue;
+
+	#loadingIcon {
+		height: 3rem;
+	}
+}

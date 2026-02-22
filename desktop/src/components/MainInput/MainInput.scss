@@ -1,0 +1,188 @@
+@use "../../styles/App.scss";
+
+#MainInput {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	flex-wrap: wrap;
+
+	width: 30em;
+
+	border-radius: 0.5rem;
+	overflow: hidden;
+
+	background-color: white;
+
+	#mainInput {
+		width: 100%;
+
+		padding: 0.5em;
+		box-sizing: border-box;
+
+		z-index: 0;
+
+		text-align: center;
+
+		border-radius: 0.5rem;
+
+		box-shadow: 0px 0em 0.75em 0.1em rgba(0, 0, 0, 0.1);
+		background-color: white;
+	}
+	#mainInput:focus {
+		outline: none;
+
+		// box-shadow: 0px 0px 0px 2px black inset;
+	}
+
+	#underMainInput {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-evenly;
+		align-items: stretch;
+		flex-wrap: wrap;
+
+		width: 100%;
+
+		padding: 1em;
+		box-sizing: border-box;
+
+		background-color: white;
+
+		&.hidden {
+			height: 0;
+			padding: 0;
+		}
+
+		&visible {
+			height: auto;
+		}
+
+		#selection {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-evenly;
+			align-items: stretch;
+			flex-wrap: wrap;
+
+			width: 100%;
+
+			margin-bottom: 1.5em;
+
+			// background-color: orange;
+
+			.section {
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-start;
+				align-items: center;
+
+				// background-color: red;
+
+				.prompt {
+					margin-bottom: 0.35em;
+
+					// background-color: green;
+				}
+			}
+
+			.word_selection {
+				min-width: 9em;
+				width: auto;
+
+				// background-color: red;
+
+				.words {
+					display: flex;
+					flex-direction: column;
+					align-items: flex-end;
+					width: 100%;
+
+					// background-color: orange;
+
+					.word {
+						display: flex;
+						flex-direction: row;
+						justify-content: space-between;
+						align-items: center;
+
+						width: 100%;
+
+						padding: 0.25em;
+						padding-left: 0.5em;
+						padding-right: 0.5em;
+						box-sizing: border-box;
+
+						margin-bottom: 0.66em;
+
+						border-radius: 0.5em;
+						// border: 1px solid black;
+
+						background-color: white;
+
+						.number_key {
+							// margin-top: -0.166em;
+							opacity: 50%;
+						}
+
+						.text {
+							display: flex;
+							align-items: center;
+
+							margin-top: 0.166em;
+
+							// background-color: red;
+						}
+					}
+					.word:focus,
+					.word:hover {
+						outline: none;
+						box-shadow: 0px 0px 0.25em 0px lightgray;
+					}
+				}
+			}
+
+			.definition {
+				#meaning {
+					height: 100%;
+
+					padding: 0.75em;
+					box-sizing: border-box;
+
+					border-radius: 0.25em;
+					box-shadow: 0px 0px 0.25em 0px lightgray inset;
+
+					// background-color: orange;
+				}
+				#meaning:focus {
+					outline: none;
+					// border-color: black;
+				}
+			}
+		}
+
+		.create_note {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+
+			width: 100%;
+
+			padding: 0.33em;
+			box-sizing: border-box;
+
+			border-radius: 0.25em;
+			border: 2px solid App.$COLOR_B;
+		}
+		.create_note:hover,
+		.create_note:focus {
+			outline: none;
+			background-color: App.$COLOR_B;
+		}
+		.create_note:active {
+			border-color: App.$COLOR_B_DARK;
+			background-color: App.$COLOR_B_DARK;
+		}
+	}
+}
