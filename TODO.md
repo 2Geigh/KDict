@@ -10,6 +10,7 @@
 - [ ] Replace word button elements with radio inputs
 - [ ] Add number key navigation for word list
 - [ ] Add sentence parsing
+- [ ] Port from Tauri to Wails
 
 #### Beta v1
 
