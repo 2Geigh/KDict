@@ -93,7 +93,11 @@ const MainInput: FC = () => {
 			/>
 			<div
 				id="underMainInput"
-				className={isParsing || hasParsed ? "visible" : "hidden"}
+				className={
+					(isParsing || hasParsed) && sentence.trim().length > 0 ?
+						"visible"
+					:	"hidden"
+				}
 			>
 				{isParsing && <Loading text="Loading..." />}
 				{hasParsed && (
