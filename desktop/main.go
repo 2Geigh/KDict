@@ -2,6 +2,9 @@ package main
 
 import (
 	"embed"
+	"fmt"
+	"log"
+	"vedana/db"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -11,7 +14,15 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+func init() {
+	err := db.InitDB()
+	if err != nil {
+		log.Fatal(fmt.Errorf("couldn't initialize database: %w", err))
+	}
+}
+
 func main() {
+
 	// Create an instance of the app structure
 	app := NewApp()
 

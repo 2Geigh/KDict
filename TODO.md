@@ -11,6 +11,7 @@
 - [ ] Add number key navigation for word list
 - [ ] Add sentence parsing
 - [ ] Port from Tauri to Wails
+- [ ] Add SQLite database
 
 #### Beta v1
 

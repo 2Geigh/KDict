@@ -6,7 +6,10 @@ export const Watermark: FC = () => {
 
 	return (
 		<div id="Watermark">
-			<a href="https://nicholasgarcia.com">Nicholas Garcia</a>,
+			<a href="https://nicholasgarcia.com" target="_blank">
+				Nicholas Garcia
+			</a>
+			,
 			<span className="year">
 				{" "}
 				{thisYear > 2026 ? `2026-${thisYear}` : thisYear}.
