@@ -42,6 +42,9 @@ func InitDB() error {
 		return fmt.Errorf("failed to reach database: %w", err)
 	}
 
+	DB.SetMaxOpenConns(0) // unlimited
+	DB.SetMaxIdleConns(0) // no idle connections retained
+
 	err = runMigrations()
 	if err != nil {
 		return fmt.Errorf("couldn't migrate database: %w", err)
