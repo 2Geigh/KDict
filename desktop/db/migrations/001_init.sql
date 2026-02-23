@@ -24,5 +24,6 @@ CREATE TABLE IF NOT EXISTS "Notes" (
 -- +goose down
 DROP TABLE "Notes";
 
-DROP TABLE "Words"
-DROP TABLE "Sentences"
+DROP TABLE "Words";
+
+DROP TABLE "Sentences";
