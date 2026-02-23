@@ -10,8 +10,10 @@
 - [ ] Replace word button elements with radio inputs
 - [ ] Add number key navigation for word list
 - [ ] Add sentence parsing
-- [ ] Port from Tauri to Wails
-- [ ] Add SQLite database
+- [x] Port from Tauri to Wails
+- [x] Add SQLite database
+- [ ] Add routing
+- [ ] Make "collection" page
 
 #### Beta v1
 
