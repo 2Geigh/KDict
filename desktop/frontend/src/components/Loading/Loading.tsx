@@ -8,8 +8,8 @@ const Loading: FC<LoadingProps> = ({ text }) => {
 	return (
 		<div id="Loading">
 			<img
-				src="../../../public/stroke-order/fast/fast_美-order-1.gif"
-				alt="Parsing..."
+				src="/stroke-order/fast/fast_直-order.gif"
+				alt={`${text}...`}
 				id="loadingIcon"
 			/>
 			<span>{text}</span>
