@@ -1,5 +1,8 @@
+@use "../../styles/App.scss";
+
 #Home {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 
@@ -7,6 +10,45 @@
 	width: 100%;
 
 	background-color: pink;
-	background-image: url("/public/sakura.jpg");
+	background-image: url("/public/backgrounds/blurs/sakura_blur.jpg");
 	background-size: cover;
+
+	#container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-end;
+
+		padding: 1.5em;
+		box-sizing: border-box;
+
+		border-radius: 1.5em;
+
+		// background-color: rgba(255, 255, 255, 1);
+		// backdrop-filter: blur(1em);
+
+		#viewCollection {
+			padding: 0.75em;
+			padding-left: 1em;
+			padding-right: 1em;
+			box-sizing: border-box;
+
+			margin-top: 1.5em;
+
+			border-radius: 0.66em;
+
+			font-size: 0.8em;
+			text-decoration: none;
+
+			background-color: App.$COLOR_B;
+		}
+		#viewCollection:hover,
+		#viewCollection:focus {
+			color: black;
+			background-color: App.$COLOR_B_DARK;
+		}
+		#viewCollection:active {
+			box-shadow: 0px 0px 1em 0px rgba(82, 82, 82, 0.5) inset;
+		}
+	}
 }

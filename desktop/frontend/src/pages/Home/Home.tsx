@@ -4,7 +4,12 @@ import "./Home.scss"
 const Home = () => {
 	return (
 		<div id="Home">
-			<MainInput />
+			<div id="container">
+				<MainInput />
+				<a id="viewCollection" href="">
+					View collection
+				</a>
+			</div>
 		</div>
 	)
 }
