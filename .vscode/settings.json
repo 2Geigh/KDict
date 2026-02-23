@@ -1,0 +1,10 @@
+{
+	"sqltools.connections": [
+		{
+			"previewLimit": 50,
+			"driver": "SQLite",
+			"name": "Vedana",
+			"database": "${workspaceFolder:KDict}/desktop/db/database.db"
+		}
+	]
+}
