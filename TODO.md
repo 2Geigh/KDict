@@ -14,6 +14,7 @@
 - [x] Add SQLite database
 - [ ] Add routing
 - [ ] Make "collection" page
+- [ ] Fix underMainInput display glitch
 
 #### Beta v1
 
