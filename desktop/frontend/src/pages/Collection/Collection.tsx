@@ -25,10 +25,13 @@ const Collection: FC = () => {
 	return (
 		<div id="Collection" className="page">
 			<div id="container">
-				<select defaultValue={"sentences"}>
-					<option value="sentences">Sentences</option>
-					<option value="words">Words</option>
-				</select>
+				<div className="top">
+					<select defaultValue={"sentences"}>
+						<option value="sentences">Sentences</option>
+						<option value="words">Words</option>
+					</select>
+					<button>Export</button>
+				</div>
 				<table>
 					<tr>
 						<th>
