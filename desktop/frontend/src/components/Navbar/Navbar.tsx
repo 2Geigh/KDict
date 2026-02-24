@@ -10,6 +10,9 @@ const Navbar: FC = () => {
 			</Link>
 			<ul>
 				<li>
+					<Link to={"/home"}>Add</Link>
+				</li>
+				<li>
 					<Link to={"/collection"}>Browse</Link>
 				</li>
 				<li>
