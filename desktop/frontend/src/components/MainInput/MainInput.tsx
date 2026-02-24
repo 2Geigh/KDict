@@ -73,7 +73,7 @@ const MainInput: FC = () => {
 		<div id="MainInput">
 			<input
 				id="mainInput"
-				placeholder={"Type a word or sentence..."}
+				placeholder={"Add a sentence..."}
 				maxLength={MAX_SENTENCE_LENGTH}
 				onChange={(e: ChangeEvent<HTMLInputElement>) => {
 					e.preventDefault

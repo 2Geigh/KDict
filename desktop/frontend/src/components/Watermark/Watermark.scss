@@ -18,16 +18,18 @@
 
 	border-top-right-radius: 0.5em;
 
-	font-family: monospace;
+	font-family: "Inter", sans-serif;
 	font-weight: lighter;
 	font-size: 1rem;
 
 	transition: background-color 0.1s;
-	background-color: rgba(255, 255, 255, 0.5);
+	background-color: rgba(255, 255, 255, 0.75);
 
 	a {
 		text-decoration: underline;
 		font-size: inherit;
+		font-family: inherit;
+		color: black;
 	}
 
 	.year {
@@ -35,5 +37,6 @@
 		margin-top: 0.05em;
 		// background-color: red;
 		font-size: inherit;
+		font-family: inherit;
 	}
 }
