@@ -1,11 +1,25 @@
-* {
-	margin: 0;
-	padding: 0;
-	font-weight: normal;
-	font-size: inherit;
-}
-
 $COLOR_A: #ffb7c5;
 $COLOR_A_DARK: #ca8996;
 $COLOR_B: #b7fff1;
 $COLOR_B_DARK: #7bbaae;
+
+$NAVBAR_HEIGHT: 2.25em;
+
+* {
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+	font-size: 1rem;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+body {
+	background-color: lightgray;
+	background-image: url("/backgrounds/blurs/sakura_blur.jpg");
+	background-size: cover;
+	background-position: 50% 50%;
+
+	.page {
+		min-height: calc(100vh - $NAVBAR_HEIGHT);
+	}
+}

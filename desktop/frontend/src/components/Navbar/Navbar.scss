@@ -1,0 +1,74 @@
+@use "../../styles/App.scss";
+
+#Navbar {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+
+	width: 100%;
+	height: App.$NAVBAR_HEIGHT;
+
+	padding: 0.25em;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	box-sizing: border-box;
+
+	color: black;
+	background-color: rgba(255, 255, 255, 0.5);
+
+	a {
+		text-decoration: none;
+
+		color: inherit;
+	}
+
+	#logo {
+		font-size: 1.25em;
+		font-weight: bold;
+	}
+
+	ul {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+
+		list-style-type: none;
+
+		// background-color: red;
+
+		li {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			a {
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+
+				width: 5em;
+
+				margin-left: 1em;
+				padding-bottom: 1em;
+
+				padding: 0.1em;
+				box-sizing: border-box;
+
+				border-radius: 0.33em;
+				overflow: hidden;
+
+				font-family: "Inter", sans-serif;
+				line-height: 1.5em;
+
+				color: black;
+			}
+
+			a:hover {
+				background-color: rgba(255, 255, 255, 0.5);
+			}
+		}
+	}
+}
