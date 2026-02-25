@@ -15,6 +15,7 @@
 - [ ] Add routing
 - [ ] Make "collection" page
 - [ ] Fix underMainInput display glitch
+- [ ] Show GNU GPL at startup
 
 #### Beta v1
 
